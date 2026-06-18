@@ -1,0 +1,53 @@
+services:
+  db:
+    image: mariadb:11
+    command: --transaction-isolation=READ-COMMITTED --binlog-format=ROW
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+
+  app:
+    image: nextcloud:stable-apache
+    restart: unless-stopped
+    ports:
+      - "${NEXTCLOUD_PORT:-8080}:80"
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - nextcloud_html:/var/www/html
+      - nextcloud_data:/var/www/html/data
+    environment:
+      MYSQL_HOST: db
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      REDIS_HOST: redis
+      NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER}
+      NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD}
+      NEXTCLOUD_TRUSTED_DOMAINS: localhost 127.0.0.1 ${NEXTCLOUD_DOMAIN}
+
+  cron:
+    image: nextcloud:stable-apache
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+    volumes:
+      - nextcloud_html:/var/www/html
+      - nextcloud_data:/var/www/html/data
+    entrypoint: /cron.sh
+
+volumes:
+  db_data:
+  nextcloud_html:
+  nextcloud_data:

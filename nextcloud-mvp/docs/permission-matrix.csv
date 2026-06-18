@@ -1,0 +1,8 @@
+Folder,Admin,Giam doc,Ke toan,Nhan su,Kinh doanh,Nhan vien
+Ban giam doc,Full,Edit,None,None,None,None
+Ke toan,Full,View,Edit,None,None,None
+Nhan su,Full,View,None,Edit,None,None
+Kinh doanh,Full,View,None,None,Edit,None
+Tai lieu chung,Full,Edit,Edit,Edit,Edit,View
+Hop dong khach hang,Full,View,View,None,Edit,None
+Chinh sach cong ty,Full,Edit,View,View,View,View
